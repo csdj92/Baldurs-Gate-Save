@@ -37,26 +37,31 @@ def import_saves():
 
 
 def export_saves():
-    folder_selected = filedialog.askdirectory()
-    if folder_selected:
-        selected_saves = saves_list.curselection()
-        for save_index in selected_saves:
-            save_folder = saves_list.get(save_index)
-            src_folder_path = os.path.join(save_path, save_folder)
-            dest_folder_path = os.path.join(folder_selected, save_folder)
+    folder_selected = filedialog.askdirectory(
+        title="Select destination for ZIP archive"
+    )
+    if not folder_selected:
+        print("No destination selected for export. Exiting function.")
+        return
 
-            print(f"Source: {src_folder_path}")
-            print(f"Destination: {dest_folder_path}")
+    selected_saves = saves_list.curselection()
+    for save_index in selected_saves:
+        save_folder = saves_list.get(save_index)
+        src_folder_path = os.path.join(save_path, save_folder)
 
-            try:
-                if os.path.isdir(src_folder_path):
-                    shutil.copytree(src_folder_path, dest_folder_path)
-                else:
-                    print(f"'{src_folder_path}' is not a directory.")
-            except Exception as e:
-                print(f"Error during copy: {e}")
+        # The destination path for the ZIP will be in the selected folder
+        # and the ZIP will be named after the save folder
+        zip_dest_path = os.path.join(folder_selected, save_folder)
 
-        messagebox.showinfo("Success", "Selected saves exported successfully!")
+        print(f"Source: {src_folder_path}")
+        print(f"Destination ZIP: {zip_dest_path}.zip")
+
+        try:
+            shutil.make_archive(zip_dest_path, "zip", src_folder_path)
+        except Exception as e:
+            print(f"Error during zipping: {e}")
+
+    messagebox.showinfo("Success", "Selected saves exported successfully as ZIP!")
 
 
 # Paths

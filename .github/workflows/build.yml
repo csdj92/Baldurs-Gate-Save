@@ -1,0 +1,31 @@
+name: Build EXE
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller
+
+      - name: Build EXE
+        run: pyinstaller --onefile main.py
+
+      - name: Upload EXE as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: BaldursGate3SaveManager.exe
+          path: ./dist/main.exe
